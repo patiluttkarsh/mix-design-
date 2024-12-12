@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mix Design Dataset Generator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      padding: 0;
+      background-color: #f9f9f9;
+      color: #333;
+    }
+
+    h1 {
+      text-align: center;
+      color: #444;
+    }
+
+    form {
+      max-width: 500px;
+      margin: 20px auto;
+      padding: 20px;
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
+
+    label {
+      display: block;
+      margin: 10px 0 5px;
+      font-weight: bold;
+    }
+
+    input, select, button {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    button {
+      background: #007BFF;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #0056b3;
+    }
+
+    #output {
+      max-width: 800px;
+      margin: 20px auto;
+      padding: 20px;
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      overflow-x: auto;
+    }
+
+    pre {
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+  </style>
+</head>
+<body>
+  <h1>Mix Design Dataset Generator</h1>
+
+  <form id="inputForm">
+    <label for="buildingArea">Building Area (m²):</label>
+    <input type="number" id="buildingArea" name="buildingArea" min="50" max="1000" step="50" required>
+
+    <label for="floorHeight">Floor Height (m):</label>
+    <input type="number" id="floorHeight" name="floorHeight" min="2.5" max="4.0" step="0.1" required>
+
+    <label for="numberOfFloors">Number of Floors:</label>
+    <input type="number" id="numberOfFloors" name="numberOfFloors" min="1" max="10" required>
+
+    <label for="structuralType">Structural Element Type:</label>
+    <select id="structuralType" name="structuralType">
+      <option value="Beams">Beams</option>
+      <option value="Columns">Columns</option>
+      <option value="Slabs">Slabs</option>
+      <option value="Footings">Footings</option>
+    </select>
+
+    <label for="concreteGrade">Concrete Grade:</label>
+    <select id="concreteGrade" name="concreteGrade">
+      <option value="M20">M20</option>
+      <option value="M25">M25</option>
+      <option value="M30">M30</option>
+      <option value="M40">M40</option>
+      <option value="M50">M50</option>
+    </select>
+
+    <button type="button" onclick="generateDataset()">Generate Dataset</button>
+  </form>
+
+  <div id="output">
+    <h2>Generated Dataset</h2>
+    <pre id="dataset"></pre>
+  </div>
+
+  <script>
+    const STANDARD_MIX_PROPORTIONS = {
+      M20: { cement: 320, water: 186, fineAgg: 700, coarseAgg: 1194 },
+      M25: { cement: 350, water: 175, fineAgg: 676, coarseAgg: 1199 },
+      M30: { cement: 380, water: 165, fineAgg: 652, coarseAgg: 1203 },
+      M40: { cement: 430, water: 155, fineAgg: 628, coarseAgg: 1187 },
+      M50: { cement: 480, water: 145, fineAgg: 604, coarseAgg: 1171 }
+    };
+
+    function generateDataset() {
+      const buildingArea = parseFloat(document.getElementById("buildingArea").value);
+      const floorHeight = parseFloat(document.getElementById("floorHeight").value);
+      const numberOfFloors = parseInt(document.getElementById("numberOfFloors").value);
+      const structuralType = document.getElementById("structuralType").value;
+      const concreteGrade = document.getElementById("concreteGrade").value;
+
+      // Sample dataset generation logic
+      const mixProportion = STANDARD_MIX_PROPORTIONS[concreteGrade];
+      const concreteVolume = buildingArea * floorHeight * numberOfFloors * 0.1; // Example calculation
+      const cementContent = mixProportion.cement * concreteVolume;
+      const waterContent = mixProportion.water * concreteVolume;
+      const fineAggregateContent = mixProportion.fineAgg * concreteVolume;
+      const coarseAggregateContent = mixProportion.coarseAgg * concreteVolume;
+
+      const dataset = {
+        buildingArea,
+        floorHeight,
+        numberOfFloors,
+        structuralType,
+        concreteGrade,
+        concreteVolume: concreteVolume.toFixed(2),
+        cementContent: cementContent.toFixed(2),
+        waterContent: waterContent.toFixed(2),
+        fineAggregateContent: fineAggregateContent.toFixed(2),
+        coarseAggregateContent: coarseAggregateContent.toFixed(2)
+      };
+
+      document.getElementById("dataset").textContent = JSON.stringify(dataset, null, 2);
+    }
+  </script>
+</body>
+</html>
